@@ -1,50 +1,24 @@
-// Global variables & packages
+// Packages needed to run Readme Generator
 const inquirer = require('inquirer');
 const fs = require('fs');
+const generateMarkdown = require('./utils/generateMarkdown');
 
 
 
-// createMarkdown const created to organize README file and add user answers to correct sections.
-const createMarkdown = ({Title, Description, Installation, Usage, Credits, License}) =>
-    `
-# ${Title}
-
-## Description
-
-${Description}
-
-### Installation 
-
-${Installation}
-
-### Usage
-
-${Usage}
-
-### Credits
-
-${Credits}
-
-### License
-
-${License}`;
-
-// Inquirer prompted user questions to gather input data
-inquirer
-.prompt([
+const questions = [
     {
         type: 'input',
-        name: 'Title',
+        name: 'title',
         message: 'What is the title of you project?',
     },
     {
         type: 'input',
-        name: 'Description',
+        name: 'description',
         message: 'Provide a brief description explaining what your project is and how it works.',
     },
     {
         type: 'input',
-        name: "Installation",
+        name: "installation",
         message: 'What are the steps required to install your project?',
          
     },
@@ -64,28 +38,42 @@ inquirer
         message: 'Choose a license for your project.',
         choices: ['Apache License 2.0', 'GNU General Public License v3.0', 'MIT License', 'BSD 2-Clause', 'Eclipse Public License 2.0'],
     },
+    {
+        type: 'input',
+        name: 'username',
+        message: 'Please enter your GitHub Username.',
+    },
 
-])
-// Write file function using the createMarkdown format and user generated answers.
-.then((answers) => {
-    const markdownContent = createMarkdown(answers);
+];
+function writeReadMeFile(fileName, answerArray) {
+    console.log(answerArray);
 
-    fs.writeFile('README.md', markdownContent, (err) =>
-    console.log('Successfully created ReadMe file!')
-    );
-});
+    fs.writeFile(`${fileName}.md`, answerArray, (err) => {
+                if (err) throw err;
+                console.log("Saved!");
+            });
+}
 
+// function writeReadMeFile(fileName, answerArray)
+// // console.log(answersArray);
+//     fs.writeFile(`${fileName}.md`, answerArray, (err) => {
+//         if (err) throw err;
+//         console.log('ReadMe Saved!');
+//     });
 
+    // // TODO: Create a function to initialize app
+function init() {
+    inquirer
+        .prompt(questions)
+        .then((answers) => {
+            // console.log(answers);
+            const answerArray = generateMarkdown(answers);
+            const fileName = answers.title;
+            writeReadMeFile(fileName, answerArray);
 
-// // TODO: Create a function to write README file
-// function writeToFile(fileName, data) {}
-
-// // TODO: Create a function to initialize app
-// function init() {
-
-// }
-
+        })
+    };
 
 
 // // Function call to initialize app
-// init();
+init();
